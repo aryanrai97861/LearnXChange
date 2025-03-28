@@ -1,0 +1,8 @@
+{"level":"info","message":"Successfully connected to MongoDB.","service":"learnxchange","timestamp":"2025-03-27 01:44:45"}
+{"0":"m","1":"o","10":"1","11":"2","12":"7","13":".","14":"0","15":".","16":"0","17":".","18":"1","19":":","2":"n","20":"2","21":"7","22":"0","23":"1","24":"7","25":"/","26":"l","27":"e","28":"a","29":"r","3":"g","30":"n","31":"x","32":"c","33":"h","34":"a","35":"n","36":"g","37":"e","4":"o","5":"d","6":"b","7":":","8":"/","9":"/","level":"debug","message":"Database URL:","service":"learnxchange","timestamp":"2025-03-27 01:44:45"}
+{"level":"info","message":"Server running in development mode on port 5000","service":"learnxchange","timestamp":"2025-03-27 01:44:45"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"learnxchange","timestamp":"2025-03-27 01:44:56"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"learnxchange","timestamp":"2025-03-27 01:45:29"}
+{"0":"m","1":"o","10":"1","11":"2","12":"7","13":".","14":"0","15":".","16":"0","17":".","18":"1","19":":","2":"n","20":"2","21":"7","22":"0","23":"1","24":"7","25":"/","26":"l","27":"e","28":"a","29":"r","3":"g","30":"n","31":"x","32":"c","33":"h","34":"a","35":"n","36":"g","37":"e","4":"o","5":"d","6":"b","7":":","8":"/","9":"/","level":"debug","message":"Database URL:","service":"learnxchange","timestamp":"2025-03-27 01:45:29"}
+{"level":"info","message":"Server running in development mode on port 3000","service":"learnxchange","timestamp":"2025-03-27 01:45:29"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"learnxchange","timestamp":"2025-03-27 01:46:48"}

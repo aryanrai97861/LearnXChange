@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Course</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        select {
+            background-color: white;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .uploaded-documents {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .document-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .document-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .document-info {
+            flex-grow: 1;
+        }
+
+        .document-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .document-meta {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .document-button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .view-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background-color: #218838;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload Your Course</h2>
+        <form id="courseForm">
+            <div class="form-group">
+                <label for="title">Course Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category" required onchange="updateSubcategories()">
+                    <option value="">Select Category</option>
+                    <option value="class">School Classes</option>
+                    <option value="competitive">Competitive Exams</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory">Subcategory</label>
+                <select id="subcategory" name="subcategory" required>
+                    <option value="">Select Subcategory</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject" required>
+                    <option value="">Select Subject</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration (hours)</label>
+                <input type="number" id="duration" name="duration" required min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="materials">Course Materials (PDF, DOC, etc.)</label>
+                <input type="file" id="materials" name="materials" multiple accept=".pdf,.doc,.docx,.ppt,.pptx">
+                <small class="error-message">Maximum file size: 10MB</small>
+            </div>
+
+            <button type="submit" class="submit-btn">Upload Course</button>
+        </form>
+
+        <div class="uploaded-documents">
+            <h3>Uploaded Documents</h3>
+            <div id="documentsList" class="document-list">
+                <!-- Documents will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateSubcategories() {
+            const category = document.getElementById('category').value;
+            const subcategorySelect = document.getElementById('subcategory');
+            const subjectSelect = document.getElementById('subject');
+            subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+
+            if (category === 'class') {
+                const classes = ['class8', 'class9', 'class10', 'class11', 'class12'];
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls;
+                    option.textContent = `Class ${cls.replace('class', '')}`;
+                    subcategorySelect.appendChild(option);
+                });
+                // Show all subjects for school classes
+                subjectSelect.innerHTML = `
+                    <option value="">Select Subject</option>
+                    <option value="maths">Mathematics</option>
+                    <option value="physics">Physics</option>
+                    <option value="chemistry">Chemistry</option>
+                    <option value="biology">Biology</option>
+                    <option value="english">English</option>
+                    <option value="history">History</option>
+                    <option value="geography">Geography</option>
+                    <option value="computer">Computer Science</option>
+                `;
+            } else if (category === 'competitive') {
+                const exams = ['jee', 'neet', 'gate', 'bank', 'ssc', 'upsc'];
+                exams.forEach(exam => {
+                    const option = document.createElement('option');
+                    option.value = exam;
+                    option.textContent = exam.toUpperCase();
+                    subcategorySelect.appendChild(option);
+                });
+
+                // Reset subject dropdown
+                subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+
+                // Add event listener for subcategory changes
+                subcategorySelect.addEventListener('change', function() {
+                    const selectedExam = this.value;
+                    subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                    
+                    // Define subjects for each exam type
+                    const examSubjects = {
+                        'jee': ['maths', 'physics', 'chemistry', 'english', 'computer'],
+                        'neet': ['physics', 'chemistry', 'biology', 'english'],
+                        'gate': ['maths', 'physics', 'chemistry', 'computer', 'english'],
+                        'bank': ['maths', 'english', 'computer', 'history', 'geography'],
+                        'ssc': ['maths', 'english', 'computer', 'history', 'geography'],
+                        'upsc': ['history', 'geography', 'english', 'computer', 'maths']
+                    };
+
+                    // Map subject values to display names
+                    const subjectNames = {
+                        'maths': 'Mathematics',
+                        'physics': 'Physics',
+                        'chemistry': 'Chemistry',
+                        'biology': 'Biology',
+                        'english': 'English',
+                        'history': 'History',
+                        'geography': 'Geography',
+                        'computer': 'Computer Science'
+                    };
+
+                    // Add relevant subjects based on selected exam
+                    if (selectedExam && examSubjects[selectedExam]) {
+                        examSubjects[selectedExam].forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject;
+                            option.textContent = subjectNames[subject];
+                            subjectSelect.appendChild(option);
+                        });
+                    }
+                });
+            }
+            // Reset subject selection
+            subjectSelect.value = '';
+        }
+
+        async function loadUploadedDocuments() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch('http://localhost:5000/api/documents', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load documents');
+                }
+
+                const documents = await response.json();
+                const documentsList = document.getElementById('documentsList');
+                
+                if (!documents || documents.length === 0) {
+                    documentsList.innerHTML = '<p>No documents uploaded yet.</p>';
+                    return;
+                }
+
+                documentsList.innerHTML = documents.map(doc => `
+                    <div class="document-item">
+                        <div class="document-info">
+                            <div class="document-title">${doc.originalName || doc.filename}</div>
+                            <div class="document-meta">
+                                Uploaded: ${new Date(doc.uploadDate).toLocaleDateString()}
+                                | Type: ${doc.mimetype}
+                                | Size: ${formatFileSize(doc.size)}
+                            </div>
+                        </div>
+                        <div class="document-actions">
+                            <a href="http://localhost:5000/uploads/${doc.filename}" 
+                               class="document-button view-btn" 
+                               target="_blank">View</a>
+                            <button class="document-button delete-btn" 
+                                    onclick="deleteDocument('${doc._id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                document.getElementById('documentsList').innerHTML = `
+                    <div class="error-message">
+                        Failed to load documents. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        async function deleteDocument(docId) {
+            if (!confirm('Are you sure you want to delete this document?')) return;
+
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/documents/${docId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete document');
+                }
+
+                await loadUploadedDocuments(); // Refresh the list
+            } catch (error) {
+                console.error('Error deleting document:', error);
+                alert('Failed to delete document. Please try again.');
+            }
+        }
+
+        document.getElementById('courseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                window.location.href = 'Login.html';
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('title', document.getElementById('title').value);
+                formData.append('category', document.getElementById('category').value);
+                formData.append('subcategory', document.getElementById('subcategory').value);
+                formData.append('subject', document.getElementById('subject').value);
+                formData.append('description', document.getElementById('description').value);
+                formData.append('duration', document.getElementById('duration').value);
+
+                // Handle file upload
+                const materials = document.getElementById('materials').files;
+                if (materials.length > 0) {
+                    formData.append('file', materials[0]); // Upload single file for now
+                }
+
+                const response = await fetch('http://localhost:5000/api/documents', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to upload documents');
+                }
+
+                const result = await response.json();
+                alert('Document uploaded successfully!');
+                document.getElementById('courseForm').reset();
+                await loadUploadedDocuments(); // Refresh the documents list
+            } catch (error) {
+                console.error('Error uploading documents:', error);
+                alert(error.message || 'Failed to upload documents. Please try again.');
+            }
+        });
+
+        // Load documents when page loads
+        document.addEventListener('DOMContentLoaded', loadUploadedDocuments);
+    </script>
+</body>
+</html>

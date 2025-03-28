@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Course</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        select {
+            background-color: white;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload Your Course</h2>
+        <form id="courseForm">
+            <div class="form-group">
+                <label for="title">Course Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category" required onchange="updateSubcategories()">
+                    <option value="">Select Category</option>
+                    <option value="class">School Classes</option>
+                    <option value="competitive">Competitive Exams</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory">Subcategory</label>
+                <select id="subcategory" name="subcategory" required>
+                    <option value="">Select Subcategory</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration (hours)</label>
+                <input type="number" id="duration" name="duration" required min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="materials">Course Materials (PDF, DOC, etc.)</label>
+                <input type="file" id="materials" name="materials" multiple accept=".pdf,.doc,.docx,.ppt,.pptx">
+            </div>
+
+            <button type="submit" class="submit-btn">Upload Course</button>
+        </form>
+    </div>
+
+    <script>
+        function updateSubcategories() {
+            const category = document.getElementById('category').value;
+            const subcategorySelect = document.getElementById('subcategory');
+            subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+
+            if (category === 'class') {
+                const classes = ['class8', 'class9', 'class10', 'class11', 'class12'];
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls;
+                    option.textContent = `Class ${cls.replace('class', '')}`;
+                    subcategorySelect.appendChild(option);
+                });
+            } else if (category === 'competitive') {
+                const exams = ['jee', 'neet', 'gate', 'bank', 'ssc', 'upsc'];
+                exams.forEach(exam => {
+                    const option = document.createElement('option');
+                    option.value = exam;
+                    option.textContent = exam.toUpperCase();
+                    subcategorySelect.appendChild(option);
+                });
+            }
+        }
+
+        document.getElementById('courseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                window.location.href = 'Login.html';
+                return;
+            }
+
+            try {
+                // First verify the token
+                const verifyResponse = await fetch('http://localhost:5000/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!verifyResponse.ok) {
+                    alert('Your session has expired. Please login again.');
+                    localStorage.removeItem('token');
+                    window.location.href = 'Login.html';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('title', document.getElementById('title').value);
+                formData.append('category', document.getElementById('category').value);
+                formData.append('subcategory', document.getElementById('subcategory').value);
+                formData.append('description', document.getElementById('description').value);
+                formData.append('duration', document.getElementById('duration').value);
+
+                const materials = document.getElementById('materials').files;
+                for (let i = 0; i < materials.length; i++) {
+                    formData.append('materials', materials[i]);
+                }
+
+                console.log('Sending form data:', {
+                    title: formData.get('title'),
+                    category: formData.get('category'),
+                    subcategory: formData.get('subcategory'),
+                    description: formData.get('description'),
+                    duration: formData.get('duration'),
+                    materialsCount: materials.length
+                });
+
+                const response = await fetch('http://localhost:5000/api/courses', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                let data;
+                try {
+                    const text = await response.text();
+                    try {
+                        data = JSON.parse(text);
+                    } catch (e) {
+                        console.error('Failed to parse response as JSON:', text);
+                        throw new Error('Invalid server response format');
+                    }
+                } catch (error) {
+                    console.error('Error reading response:', error);
+                    throw new Error('Failed to read server response');
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error uploading course');
+                }
+
+                if (data.status === 'success') {
+                    console.log('Course upload successful:', data);
+                    alert('Course uploaded successfully!');
+                    window.location.href = 'courses.html';
+                } else {
+                    throw new Error(data.message || 'Error uploading course');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Error uploading course. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .course-header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .course-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .course-info {
+            padding: 30px;
+        }
+
+        .course-title {
+            font-size: 2em;
+            color: #333;
+            margin: 0 0 20px 0;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        .price {
+            font-size: 1.5em;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .materials {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .materials h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .material-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .material-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .material-item:last-child {
+            border-bottom: none;
+        }
+
+        .enroll-section {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .enroll-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+
+        .enroll-button:hover {
+            background-color: #0056b3;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .instructor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-button">← Back to Courses</a>
+    
+    <div class="container">
+        <div id="courseContent">
+            <!-- Course content will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        // Format price in Indian Rupees
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR'
+            }).format(price);
+        }
+
+        // Load course details
+        async function loadCourseDetails() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const courseId = urlParams.get('id');
+
+                const response = await fetch(`${API_URL}/courses/${courseId}`);
+                const course = await response.json();
+
+                document.title = `${course.title} - Course Details`;
+
+                const courseContent = document.getElementById('courseContent');
+                courseContent.innerHTML = `
+                    <div class="course-header">
+                        <img src="${course.image}" alt="${course.title}">
+                    </div>
+                    <div class="course-info">
+                        <h1 class="course-title">${course.title}</h1>
+                        
+                        <div class="instructor-info">
+                            <img src="/public/images/default-avatar.png" class="instructor-avatar" alt="${course.instructor.username}">
+                            <div>
+                                <h3>Instructor</h3>
+                                <p>${course.instructor.username}</p>
+                            </div>
+                        </div>
+
+                        <div class="meta-info">
+                            <div class="meta-item">
+                                <span>Duration:</span>
+                                <strong>${course.duration} hours</strong>
+                            </div>
+                            <div class="meta-item">
+                                <span>Category:</span>
+                                <strong>${course.category}</strong>
+                            </div>
+                            <div class="meta-item price">
+                                ${formatPrice(course.price)}
+                            </div>
+                        </div>
+
+                        <div class="description">
+                            <h3>About This Course</h3>
+                            <p>${course.description}</p>
+                        </div>
+
+                        <div class="materials">
+                            <h3>Course Materials</h3>
+                            <ul class="material-list">
+                                ${course.materials.map(material => `
+                                    <li class="material-item">
+                                        <span>${material.split('/').pop()}</span>
+                                        <a href="${material}" class="download-link" target="_blank">Download</a>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="enroll-section">
+                        <a href="#" class="enroll-button" onclick="enrollCourse('${course._id}')">
+                            Enroll Now
+                        </a>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading course details:', error);
+                document.getElementById('courseContent').innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <h2>Error loading course details</h2>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle course enrollment
+        async function enrollCourse(courseId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to enroll in this course');
+                window.location.href = 'Login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/courses/enroll/${courseId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Successfully enrolled in the course!');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.message || 'Error enrolling in course');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error enrolling in course. Please try again.');
+            }
+        }
+
+        // Load course details when page loads
+        loadCourseDetails();
+    </script>
+</body>
+</html> 

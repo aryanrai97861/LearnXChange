@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Courses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            margin: 0;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .course-info {
+            padding: 20px;
+        }
+
+        .course-title {
+            font-size: 1.2em;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        .course-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .course-price {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .course-duration {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .enroll-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .enroll-button:hover {
+            background-color: #0056b3;
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            grid-column: 1 / -1;
+        }
+
+        .instructor {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 id="pageTitle">Available Courses</h1>
+    </div>
+
+    <div class="filters">
+        <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <optgroup label="School Classes" id="classOptions">
+                <option value="class8">Class 8</option>
+                <option value="class9">Class 9</option>
+                <option value="class10">Class 10</option>
+                <option value="class11">Class 11</option>
+                <option value="class12">Class 12</option>
+            </optgroup>
+            <optgroup label="Competitive Exams" id="competitiveOptions">
+                <option value="jee">JEE</option>
+                <option value="neet">NEET</option>
+                <option value="gate">GATE</option>
+                <option value="bank">BANK</option>
+                <option value="ssc">SSC</option>
+                <option value="upsc">UPSC</option>
+            </optgroup>
+        </select>
+        <select id="subjectFilter">
+            <option value="">All Subjects</option>
+            <option value="maths">Mathematics</option>
+            <option value="physics">Physics</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="biology">Biology</option>
+            <option value="english">English</option>
+            <option value="history">History</option>
+            <option value="geography">Geography</option>
+            <option value="computer">Computer Science</option>
+        </select>
+    </div>
+
+    <div id="coursesGrid" class="courses-grid">
+        <!-- Courses will be dynamically loaded here -->
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let currentCategory = new URLSearchParams(window.location.search).get('category') || '';
+
+        // Update page title and filters based on category
+        function updatePageTitle() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const classOptions = document.querySelector('#classOptions');
+            const competitiveOptions = document.querySelector('#competitiveOptions');
+            const subjectFilter = document.getElementById('subjectFilter');
+
+            if (currentCategory === 'competitive') {
+                document.getElementById('pageTitle').textContent = 'Competitive Exam Courses';
+                // Show only competitive exam options
+                classOptions.style.display = 'none';
+                competitiveOptions.style.display = '';
+                // Update subject options for competitive exams
+                updateSubjectOptions(['maths', 'physics', 'chemistry', 'biology']);
+            } else if (currentCategory === 'class') {
+                document.getElementById('pageTitle').textContent = 'School Class Courses';
+                // Show only class options
+                classOptions.style.display = '';
+                competitiveOptions.style.display = 'none';
+                // Update subject options for classes
+                updateSubjectOptions(['maths', 'physics', 'chemistry', 'biology', 'english', 'history', 'geography', 'computer']);
+            } else {
+                document.getElementById('pageTitle').textContent = 'All Courses';
+                // Show all options
+                classOptions.style.display = '';
+                competitiveOptions.style.display = '';
+                // Show all subjects
+                updateSubjectOptions(['maths', 'physics', 'chemistry', 'biology', 'english', 'history', 'geography', 'computer']);
+            }
+        }
+
+        // Update subject filter options
+        function updateSubjectOptions(subjects) {
+            const subjectFilter = document.getElementById('subjectFilter');
+            const currentValue = subjectFilter.value;
+            
+            // Clear existing options except the first one (All Subjects)
+            while (subjectFilter.options.length > 1) {
+                subjectFilter.remove(1);
+            }
+
+            // Add new options
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject;
+                option.textContent = subject.charAt(0).toUpperCase() + subject.slice(1);
+                subjectFilter.appendChild(option);
+            });
+
+            // Restore previous value if it exists in new options
+            if (subjects.includes(currentValue)) {
+                subjectFilter.value = currentValue;
+            }
+        }
+
+        // Format price in Indian Rupees
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR'
+            }).format(price);
+        }
+
+        // Load and display courses
+        async function loadCourses() {
+            try {
+                const categoryFilter = document.getElementById('categoryFilter');
+                const subjectFilter = document.getElementById('subjectFilter');
+                const selectedCategory = categoryFilter.value || currentCategory;
+                const selectedSubject = subjectFilter.value;
+
+                let url = `${API_URL}/courses`;
+                if (selectedCategory) {
+                    url += `/${selectedCategory}`;
+                }
+                if (selectedSubject) {
+                    url += `?subject=${selectedSubject}`;
+                }
+
+                const response = await fetch(url);
+                const courses = await response.json();
+                
+                const coursesGrid = document.getElementById('coursesGrid');
+                coursesGrid.innerHTML = '';
+
+                if (courses.length === 0) {
+                    coursesGrid.innerHTML = `
+                        <div class="no-courses">
+                            <h2>No courses available</h2>
+                            <p>Check back later for new courses</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                courses.forEach(course => {
+                    const courseCard = document.createElement('div');
+                    courseCard.className = 'course-card';
+                    courseCard.style.cursor = 'pointer';
+                    courseCard.onclick = () => window.location.href = `course-details.html?id=${course._id}`;
+                    courseCard.innerHTML = `
+                        <img src="${course.image}" alt="${course.title}" class="course-image">
+                        <div class="course-info">
+                            <h3 class="course-title">${course.title}</h3>
+                            <p class="course-description">${course.description}</p>
+                            <p class="instructor">Instructor: ${course.instructor.username}</p>
+                            <div class="course-meta">
+                                <span class="course-price">${formatPrice(course.price)}</span>
+                                <span class="course-duration">${course.duration} hours</span>
+                            </div>
+                            <button class="enroll-button">
+                                View Course Details
+                            </button>
+                        </div>
+                    `;
+                    coursesGrid.appendChild(courseCard);
+                });
+            } catch (error) {
+                console.error('Error loading courses:', error);
+                document.getElementById('coursesGrid').innerHTML = `
+                    <div class="no-courses">
+                        <h2>Error loading courses</h2>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Filter handling
+        document.getElementById('categoryFilter').addEventListener('change', (e) => {
+            currentCategory = e.target.value;
+            loadCourses();
+        });
+
+        document.getElementById('subjectFilter').addEventListener('change', () => {
+            loadCourses();
+        });
+
+        // Initial load
+        updatePageTitle();
+        loadCourses();
+    </script>
+</body>
+</html> 

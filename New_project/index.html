@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LearnXchange is an innovative platform where students can buy, sell, and exchange academic resources at an affordable price. Empowering students to share knowledge, reduce costs, and enhance learning together. Join the community today!">
+    <title>LearnXchange - Affordable Learning Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="server.js"></script>
+    <style>
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 20px;
+        }
+        .profile-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-radius: 8px;
+            padding: 8px 0;
+        }
+        .profile-dropdown:hover .profile-content {
+            display: block;
+        }
+        .profile-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .profile-content a:hover {
+            background-color: #f5f5f5;
+        }
+        .profile-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .login-btn {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="auth-check" style="display: none;">
+        <h1>Please log in to continue</h1>
+        <a href="Login.html" class="btn">Go to Login</a>
+    </div>
+
+    <div id="main-content">
+        <header class="header">
+            <div class="header_content">
+                <a href="#home" class="logo">
+                    <img src="public/images/WhatsApp Image 2025-03-19 at 22.57.39_d3325de7.jpg" alt="LearnXchange Logo" class="img_logo">
+                    <h1>LearnXchange</h1>
+                </a>
+
+                <nav class="nav">
+                    <div class="navi">
+                        <a href="#home" class="nav_content">Home</a>
+                        <a href="#features" class="nav_content">Features</a>
+                        <a href="#pricing" class="nav_content">Pricing</a>
+                        <a href="#blog" class="nav_content">Blog</a>
+                        <a href="#about" class="nav_content">About</a>
+                    </div>
+                </nav>
+
+                <div class="nav-right">
+                    <!-- This will be shown when user is logged in -->
+                    <div id="user-section" style="display: none;">
+                        <a href="dashboard.html" class="nav_content">Dashboard</a>
+                        <div class="profile-dropdown">
+                            <div class="user-info">
+                                <div class="user-avatar" id="user-avatar">U</div>
+                                <span id="username">User</span>
+                            </div>
+                            <div class="profile-content">
+                                <div class="profile-header">My Account</div>
+                                <a href="profile.html">Profile</a>
+                                <a href="settings.html">Settings</a>
+                                <a href="#" onclick="handleLogout()">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- This will be shown when user is not logged in -->
+                    <div id="guest-section">
+                        <a href="Login.html" class="login-btn">Login</a>
+                    </div>
+                </div>
+
+                <button class="sidebar" aria-label="Toggle Menu">
+                    <img src="public/images/WhatsApp Image 2025-03-19 at 22.57.39_d3325de7.jpg" alt="Menu Icon" class="menu_icon">
+                </button>
+            </div>
+        </header>
+
+        <main class="hero-section">
+            <section class="hero-sec-content">
+                <div class="left-box">
+                    <p class="left-box-p">Very proud to introduce</p>
+                    <h1 class="hero_sec_heading">Seamless Learning for Brighter Future</h1>
+                    <p class="heading-p">Our innovative platform offers an effortless and seamless approach to learning, empowering youths of all ages to achieve a brighter future. Join us on a transformative journey to unlock your true potential with the help of our experts.</p>
+                    <div class="button_group">
+                        <button class="hero_button1" onclick="handleStartNow()">Start now</button>
+                        <button class="hero_button2">Take tour</button>
+                    </div>
+                </div>
+                <div class="right-box">
+                    <img src="public/images/WhatsApp Image 2025-03-19 at 23.17.13_2fd7166e.jpg" alt="Learning Illustration" class="hero_sec_img">
+                </div>
+            </section>
+
+            <div class="feature_container">
+                <div class="feature_content">
+                    <div class="feature_des">
+                        <h2 class="feature_heading">
+                            Our Competitive Advantage
+                        </h2>
+                        <p>
+                            We provide a great panel of analysts who are fully determined in providing the quality knowledge to the learners and ensure that they will get best output from us.
+                        </p>
+                    </div>
+                    <div class="feature_card">
+                        
+                        <div class="card1">
+                            <div class="card1_icon">
+                                <img src="public/images/WhatsApp Image 2025-03-19 at 23.38.31_30a86777.jpg" alt="Personalized Learning" id="card1_icon">
+                            </div>
+                            <div class="card1_des">
+                                <h3 class="feature_heading">Personalized Learning</h3>
+                                <p>Offer tailored learning experiences through digital machines and techniques to cater to individual learner needs.</p>
+                            </div>
+                        </div>
+        
+                        <div class="card2">
+                            <div class="card1_icon">
+                                <img src="public/images/WhatsApp Image 2025-03-19 at 23.38.57_28b51154.jpg" alt="Affordability" id="card1_icon">
+                            </div>
+                            <div class="card1_des">
+                                <h3 class="feature_heading">Affordability</h3>
+                                <p>Offer tailored learning experiences through digital machines and techniques to cater to individual learner needs.</p>
+                            </div>
+                        </div>
+        
+                        <div class="card3">
+                            <div class="card1_icon">
+                                <img src="public/images/WhatsApp Image 2025-03-19 at 23.40.11_0546a137.jpg" alt="Industry Partnerships" id="card1_icon">
+                            </div>
+                            <div class="card1_des">
+                                <h3 class="feature_heading">Industry Partnerships</h3>
+                                <p>Offer tailored learning experiences through digital machines and techniques to cater to individual learner needs.</p>
+                            </div>
+                        </div>
+        
+                        <div class="card4">
+                            <div class="card1_icon">
+                                <img src="public/images/WhatsApp Image 2025-03-19 at 23.42.02_59969a00.jpg" alt="Innovative Technology" id="card1_icon">
+                            </div>
+                            <div class="card1_des">
+                                <h3 class="feature_heading">Innovative Technology</h3>
+                                <p>Offer tailored learning experiences through digital machines and techniques to cater to individual learner needs.</p>
+                            </div>
+                        </div>
+        
+                        <div class="card5">
+                            <div class="card1_icon">
+                                <img src="public/images/WhatsApp Image 2025-03-19 at 23.43.08_7dc35c39.jpg" alt="Responsive Support" id="card1_icon">
+                            </div>
+                            <div class="card1_des">
+                                <h3 class="feature_heading">Responsive Support</h3>
+                                <p>Offer tailored learning experiences through digital machines and techniques to cater to individual learner needs.</p>
+                            </div>
+                        </div>
+        
+                        <div class="card6">
+                            <div class="card1_icon">
+                                <img src="graph.avif" alt="Analytics and Insights" id="card1_icon">
+                            </div>
+                            <div class="card1_des">
+                                <h3 class="feature_heading">Analytics and Insights</h3>
+                                <p>Offer tailored learning experiences through digital machines and techniques to cater to individual learner needs.</p>
+                            </div>
+                        </div>
+        
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check authentication status
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const authCheck = document.getElementById('auth-check');
+            const mainContent = document.getElementById('main-content');
+            const userSection = document.getElementById('user-section');
+            const guestSection = document.getElementById('guest-section');
+            const usernameElement = document.getElementById('username');
+            const userAvatar = document.getElementById('user-avatar');
+
+            if (!token) {
+                // User is not logged in
+                authCheck.style.display = 'block';
+                mainContent.style.display = 'none';
+                userSection.style.display = 'none';
+                guestSection.style.display = 'block';
+            } else {
+                // User is logged in
+                authCheck.style.display = 'none';
+                mainContent.style.display = 'block';
+                userSection.style.display = 'flex';
+                guestSection.style.display = 'none';
+                
+                // Get user info from localStorage
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (user) {
+                    usernameElement.textContent = user.username;
+                    userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                }
+                
+                // Verify token with backend
+                fetch('http://localhost:5000/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // Token is invalid or expired
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'Login.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Auth check error:', error);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'Login.html';
+                });
+            }
+        });
+
+        // Handle Start Now button click
+        function handleStartNow() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                // If user is not logged in, redirect to login page
+                window.location.href = 'Login.html';
+            } else {
+                // If user is logged in, redirect to container page
+                window.location.href = 'container.html';
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'Login.html';
+        }
+    </script>
+</body>
+</html>
