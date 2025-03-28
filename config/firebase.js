@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAbJlMdmwe55A31FhUO4J3nWb9oGgj-h94",
+  apiKey: ,
   authDomain: "learnxchange-80eac.firebaseapp.com",
   projectId: "learnxchange-80eac",
   storageBucket: "learnxchange-80eac.firebasestorage.app",
